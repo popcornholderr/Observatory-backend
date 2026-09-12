@@ -1,6 +1,6 @@
 use crate::state::AppState;
 use crate::models::JobStatus;
-use std::process::Command;
+use tokio::process::Command;
 use std::env;
 
 pub async fn run_analysis_task(state: AppState, job_id: String, filepath: String) {
@@ -34,7 +34,8 @@ pub async fn run_analysis_task(state: AppState, job_id: String, filepath: String
         .arg(&results_dir)
         .arg("--job-id")
         .arg(&job_id)
-        .output();
+        .output()
+        .await;
         
     match output {
         Ok(out) => {
