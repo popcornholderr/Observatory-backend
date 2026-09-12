@@ -45,6 +45,10 @@ pub async fn upload_file(
     let uploads_dir = std::env::var("UPLOADS_DIR").unwrap_or_else(|_| "../data/uploads".into());
     let filepath = format!("{}/{}", uploads_dir, saved_filename);
 
+    if let Err(e) = tokio::fs::create_dir_all(&uploads_dir).await {
+        return (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Failed to create uploads directory: {}", e)}))).into_response();
+    }
+
     if let Ok(mut file) = File::create(&filepath).await {
         let _ = file.write_all(&file_content).await;
     } else {
