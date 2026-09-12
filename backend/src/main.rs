@@ -38,9 +38,15 @@ async fn main() {
         .layer(cors)
         .layer(TraceLayer::new_for_http());
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 8000));
-    tracing::info!("listening on {}", addr);
-    
-    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+    let port: u16 = std::env::var("PORT")
+    .unwrap_or_else(|_| "8000".to_string())
+    .parse()
+    .expect("PORT must be a valid number");
+
+let addr = SocketAddr::from(([0, 0, 0, 0], port));
+
+tracing::info!("listening on {}", addr);
+
+let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
+axum::serve(listener, app).await.unwrap();
 }
